@@ -22,11 +22,11 @@ export class App extends Component {
 	componentDidMount() {
 		getNewDogPicture$()
 		this.chatStream = openChat$.subscribe()
-		this.store = store$.subscribe(({ sentence, img, submitted, updated }) => {
+		this.store = store$.subscribe(({ chat, img, submitted, updated }) => {
 			this.setState({
-				messages: updated === "sentence" ? [...this.state.messages, sentence.message] : this.state.messages,
-				img: img && img.src,
-				submitted: submitted && submitted.val,
+				messages: updated === "chat" ? [...this.state.messages, chat.message] : this.state.messages,
+				img: img,
+				submitted: submitted,
 			})
 		})
 	}
@@ -49,7 +49,7 @@ export class App extends Component {
 	}
 
 	handleSubmit() {
-		// submitValue$(this.state.type)
+		submitValue$(this.state.type)
 	}
 
 	render() {
