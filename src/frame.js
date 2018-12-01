@@ -5,14 +5,14 @@ export class Frame extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			img: "",
+			image: "",
 		}
 	}
 
 	componentDidMount() {
-		this.store = store$.subscribe(({ img }) => {
+		this.store = store$.subscribe(({ image }) => {
 			this.setState({
-				img: img && img.src,
+				image,
 			})
 		})
 	}
@@ -22,10 +22,10 @@ export class Frame extends Component {
 	}
 
 	render() {
-		const { img } = this.state
+		const { image } = this.state
 		return (
 			<div>
-				<img width="200" style={{border: "2px red solid"}} src={ img } alt="" />
+				<img width="200" style={{border: "2px red solid"}} src={ image } alt="" />
 			</div>
 		)
 	}

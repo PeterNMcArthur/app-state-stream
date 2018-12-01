@@ -1,19 +1,15 @@
-import { interval, Subject } from "rxjs"
+import { interval } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import faker from "faker"
-import { createNewValue } from "./newValue"
+import { createStateStream } from "./createStateStream"
 
-const _chat$ = new Subject()
-const subject = "chat"
-
-const newValue = createNewValue(subject)
-
-const updater = x => _chat$.next(newValue(x))
+export const {
+	chat$,
+	updater
+} = createStateStream("chat")
 
 export const openChat$ = interval(2000).pipe(
 	map(x => updater({
 		message: faker.lorem.sentence()
 	})),
 )
-
-export const chat$ = _chat$

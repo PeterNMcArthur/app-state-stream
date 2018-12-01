@@ -1,27 +1,42 @@
-import { merge } from "rxjs"
+import { merge, isObservable  } from "rxjs"
 import { scan, shareReplay, startWith } from "rxjs/operators"
-import { lensProp, set, omit, prop, compose } from "ramda"
+import { lensProp, isNil, set, omit, prop, compose } from "ramda"
 
-export const createStore = (...streams) => merge(...streams)
-	.pipe(
-		startWith({}),
-		scan((acc, x) => {
-			try {
-				if (!x.subject) {
-					throw new Error("No subject key was supplied to the store. In order to update the store you must provide the subject you wish to update")
-				}
-				if (!x.nextValue) {
-					throw new Error("No nextValue key was supplied to the store. In order to update the store you must provide the nextValue")
-				}
-				const updatedState = compose(
-					set(lensProp("updated"), x.subject),
-					set(lensProp(x.subject), x.nextValue)
-				)
-				return updatedState(acc)
-			} catch(e) {
-				return acc
-			}
-		}),
-		shareReplay()
-	)
+const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), true)
 
+const updateError = update => {
+	if (isNil(update.subject)) {
+		return "No subject key was supplied to the store. In order to update the store you must provide the subject you wish to update"
+	}
+	if (isNil(update.nextValue)) {
+		return "No nextValue key was supplied to the store. In order to update the store you must provide the nextValue"
+	}
+	return false
+}
+const updateApplicationStateStream = (acc, x) => {
+	try {
+		if (updateError(x)) throw new Error(updateError(x))
+		const updatedState = compose(
+			set(lensProp("updated"), x.subject),
+			set(lensProp(x.subject), x.nextValue)
+		)
+		return updatedState(acc)
+	} catch(e) {
+		console.error("createStore error: ", e)
+		return acc
+	}
+}
+
+export const createStore = (...streams) => {
+	try {
+		if (!allStreamsAreValid(streams)) throw new Error("Only observables are valid paramteres")
+		return merge(...streams)
+			.pipe(
+				startWith({}),
+				scan(updateApplicationStateStream),
+				shareReplay()
+			)
+	} catch (e) {
+		console.error("createStore error: ", e)
+	}
+}

@@ -1,8 +1,8 @@
 import React, { Component } from "react"
 import { store$ } from "./store"
-import { getNewDogPicture$ } from "./store/images"
+import { getImages } from "./store/images"
 import { openChat$ } from "./store/chat"
-import { submitValue$ } from "./store/submit"
+import { updater } from "./store/submit"
 import { Frame } from "./frame"
 
 export class App extends Component {
@@ -11,7 +11,7 @@ export class App extends Component {
 		this.state = {
 			messages: [],
 			submitted: "",
-			img: "",
+			image: "",
 			show: false,
 		}
 		this.handleChange = this.handleChange.bind(this)
@@ -20,13 +20,13 @@ export class App extends Component {
 	}
 
 	componentDidMount() {
-		getNewDogPicture$()
+		getImages()
 		this.chatStream = openChat$.subscribe()
-		this.store = store$.subscribe(({ chat, img, submitted, updated }) => {
+		this.store = store$.subscribe(({ chat, image, submitted, updated }) => {
 			this.setState({
 				messages: updated === "chat" ? [...this.state.messages, chat.message] : this.state.messages,
-				img: img,
-				submitted: submitted,
+				image,
+				submitted,
 			})
 		})
 	}
@@ -49,19 +49,19 @@ export class App extends Component {
 	}
 
 	handleSubmit() {
-		submitValue$(this.state.type)
+		updater(this.state.type)
 	}
 
 	render() {
-		const { messages, img, submitted, show } = this.state
+		const { messages, image, submitted, show } = this.state
 		return (
 			<div>
 				<h2>Rx test</h2>
 				<h3>{ submitted }</h3>
 				<input type="text" onChange={this.handleChange} />
 				<button onClick={this.handleSubmit}>update title</button>
-				<img width="200" src={ img } alt="" />
-				<button onClick={getNewDogPicture$}>change pic</button>
+				<img width="200" src={ image } alt="" />
+				<button onClick={getImages}>change pic</button>
 				{ show && <Frame /> }
 				<button onClick={this.toggleShow}>toggle show</button>
 				<ul>
