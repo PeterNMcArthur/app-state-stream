@@ -1,5 +1,5 @@
 {
-  "name": "state-stream",
+  "name": "app-state-stream",
   "version": "0.0.1",
   "description": "application level state as a stream using rxjs",
   "main": "bundle.js",

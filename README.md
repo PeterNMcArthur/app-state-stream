@@ -1,22 +1,22 @@
-# state-stream
+# app-state-stream
 
 ## Install 
 
-```npm install --save state-stream```
+```npm install --save app-state-stream```
 
 ## Usage
 
-state-stream uses rxjs subjects merged in to a larger stream to share information between different subsribers. To start if you need to create a new subject:
+app-state-stream uses rxjs subjects merged in to a larger stream to share information between different subsribers. To start if you need to create a new subject:
 
 ### Creating new subjects
 
 ```
 // src/store/user.js
-import { createNewSubject } from "state-stream"
+import { createNewSubject } from "app-state-stream"
 
 export const {
 	user$,
-	updater
+	setUser
 } = createNewSubject("user")
 
 ```
@@ -30,7 +30,7 @@ This will give us a new stream which we can pass new values to using the provide
 ```
 // src/store.js
 
-import { createStateStream } from "state-stream"
+import { createStateStream } from "app-state-stream"
 import { user$ } from "./store/user"
 
 export const store$ = createStateStream(
