@@ -1,6 +1,8 @@
 import { merge, isObservable  } from "rxjs"
 import { scan, shareReplay, startWith } from "rxjs/operators"
-import { lensProp, isNil, set, omit, prop, compose } from "ramda"
+import { set, lensProp } from "ramda"
+import { isNil } from "./helpers/isNil"
+import { compose } from "./helpers/compose"
 
 const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), true)
 
@@ -27,7 +29,7 @@ const updateApplicationStateStream = (acc, x) => {
 	}
 }
 
-export const createStore = (...streams) => {
+export const createStateStream = (...streams) => {
 	try {
 		if (!allStreamsAreValid(streams)) throw new Error("Only observables are valid paramteres")
 		return merge(...streams)

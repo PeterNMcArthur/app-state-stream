@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import { store$ } from "./store"
 import { getImages } from "./store/images"
 import { openChat$ } from "./store/chat"
-import { updater } from "./store/submit"
+import { setSubmitted } from "./store/submit"
 import { Frame } from "./frame"
 
 export class App extends Component {
@@ -23,8 +23,9 @@ export class App extends Component {
 		getImages()
 		this.chatStream = openChat$.subscribe()
 		this.store = store$.subscribe(({ chat, image, submitted, updated }) => {
+			const { messages } = this.state
 			this.setState({
-				messages: updated === "chat" ? [...this.state.messages, chat.message] : this.state.messages,
+				messages: updated === "chat" ? [...messages, chat.message] : messages,
 				image,
 				submitted,
 			})
@@ -49,7 +50,7 @@ export class App extends Component {
 	}
 
 	handleSubmit() {
-		updater(this.state.type)
+		setSubmitted(this.state.type)
 	}
 
 	render() {
