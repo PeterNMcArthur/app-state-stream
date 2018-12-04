@@ -4,7 +4,8 @@ import { set, lensProp } from "ramda"
 import { isNil } from "./helpers/isNil"
 import { compose } from "./helpers/compose"
 
-const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), true)
+const isEmpty = x => x.length !== 0
+export const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), isEmpty(streams))
 
 const updateError = update => {
 	if (isNil(update.subject)) {
@@ -15,7 +16,7 @@ const updateError = update => {
 	}
 	return false
 }
-const updateApplicationStateStream = (acc, x) => {
+export const updateApplicationStateStream = (acc, x) => {
 	try {
 		if (updateError(x)) throw new Error(updateError(x))
 		const updatedState = compose(
