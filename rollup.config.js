@@ -5,18 +5,25 @@ import resolve from "rollup-plugin-node-resolve";
 export default {
 	input: "src/index.js",
 	output: {
+		name: "appStateStream",
 		file: "bundle.js",
-		format: "cjs"
+		format: "umd",
+		globals: {
+			"rxjs": "rxjs",
+			"rxjs/operators": "rxjs.operators"
+		}
 	},
+	external: [ "rxjs", "rxjs/operators" ],
 	plugins: [
 		resolve({
+			browser: true,
 			only: [/ramda/]
 		}),
 		babel({
 			plugins: [ "ramda" ]
 		}),
 		commonjs({
-			include: 'node_modules/**',
+			include: /node_modules/,
 		}),
 	],
 }
