@@ -1,31 +1,32 @@
-import { merge, isObservable  } from "rxjs"
-import { scan, shareReplay, startWith } from "rxjs/operators"
-import { set, lensProp } from "ramda"
+import { merge, isObservable, combineLatest } from "rxjs"
+import { scan, shareReplay, startWith, skip } from "rxjs/operators"
 import { isNil } from "./helpers/isNil"
 import { compose } from "./helpers/compose"
 
 const isEmpty = x => x.length !== 0
+
 export const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), isEmpty(streams))
 
-const updateError = update => {
-	if (isNil(update.subject)) {
+const verifyStream = ({ subject, nextValue }) => {
+	if (isNil(subject)) {
 		return "No subject key was supplied to the store. In order to update the store you must provide the subject you wish to update"
 	}
-	if (isNil(update.nextValue)) {
+	if (isNil(nextValue)) {
 		return "No nextValue key was supplied to the store. In order to update the store you must provide the nextValue"
 	}
 	return false
 }
-export const updateApplicationStateStream = (acc, x) => {
+
+export const checkStreamForErrors = (error, stream) => error === false ? verifyStream(stream) : false
+
+export const updateApplicationStateStream = (acc, streams) => {
 	try {
-		if (updateError(x)) throw new Error(updateError(x))
-		const updatedState = compose(
-			set(lensProp("updated"), x.subject),
-			set(lensProp(x.subject), x.nextValue)
-		)
-		return updatedState(acc)
+		const streamError = streams.reduce(checkStreamForErrors, false)
+		if (streamError) throw new Error(streamError)
+		return streams.reduce((nextStream, { subject, nextValue }) => ({ ...nextStream, [subject]: nextValue }), {})
 	} catch(e) {
-		console.error("createStore error: ", e)
+		console.log(streams)
+		console.error("createStore error: ", JSON.stringify(e))
 		return acc
 	}
 }
@@ -33,10 +34,9 @@ export const updateApplicationStateStream = (acc, x) => {
 export const createStateStream = (...streams) => {
 	try {
 		if (!allStreamsAreValid(streams)) throw new Error("Only observables are valid paramteres")
-		return merge(...streams)
+		return combineLatest(...streams)
 			.pipe(
-				startWith({}),
-				scan(updateApplicationStateStream),
+				scan(updateApplicationStateStream, {}),
 				shareReplay()
 			)
 	} catch (e) {

@@ -8,7 +8,7 @@ export const {
 	setChat,
 } = createNewSubject("chat")
 
-export const openChat$ = interval(2000).pipe(
+export const openChat$ = interval(5000).pipe(
 	map(x => setChat({
 		message: faker.lorem.sentence()
 	})),

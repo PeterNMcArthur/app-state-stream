@@ -7,7 +7,7 @@
   "scripts": {
     "start": "parcel example/public/index.html",
     "bundle": "rollup --config",
-    "test": "mocha --watch --require @babel/register src/*.spec.js src/**/*.spec.js"
+    "test": "mocha --watch --require @babel/register src/*.spec.js"
   },
   "author": "",
   "license": "ISC",

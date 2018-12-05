@@ -1,6 +1,8 @@
 import { expect } from "chai"
-import { allStreamsAreValid, updateApplicationStateStream } from "./createStateStream"
-import { from, Subject } from "rxjs"
+import { createStateStream, allStreamsAreValid, updateApplicationStateStream, checkStreamForErrors } from "./createStateStream"
+import { from, Subject, BehaviorSubject } from "rxjs"
+import { map } from "rxjs/operators"
+import { createNewSubject } from "./createNewSubject"
 
 describe("allStreamsAreValid", () => {
 	it("If all items are observables then the streams are valid", () => {
@@ -19,28 +21,70 @@ describe("allStreamsAreValid", () => {
 
 describe("updateApplicationStateStream", () => {
 	it("will return an updated stream variable", () => {
-		const newState = updateApplicationStateStream({}, {
-			subject: "chat",
-			nextValue: {
-				message: "Good morning",
-			},
-		})
+		const newState = updateApplicationStateStream({}, [
+			{
+				subject: "chat",
+				nextValue: {
+					message: "Good morning",
+				},
+			}
+		])
 		expect(newState).to.deep.equal({
 			chat: {
 				message: "Good morning",
 			},
-			updated: "chat",
 		})
-		const updatedState = updateApplicationStateStream(newState, {
-			subject: "image",
-			nextValue: "a-wholesome-picture-for-the-whole-family-to-enjoy.jpg",
-		})
+		const updatedState = updateApplicationStateStream(newState, [
+			{
+				subject: "chat",
+				nextValue: {
+					message: "Good morning",
+				},
+			},
+			{
+				subject: "image",
+				nextValue: "a-wholesome-picture-for-the-whole-family-to-enjoy.jpg",
+			}
+		])
 		expect(updatedState).to.deep.equal({
 			chat: {
 				message: "Good morning",
 			},
 			image: "a-wholesome-picture-for-the-whole-family-to-enjoy.jpg",
-			updated: "image",
 		})
+	})
+})
+
+describe("checkStreamForErrors", () => {
+	it("If the stream is valid will return false", () => {
+		expect(checkStreamForErrors(false, { subject: "chat", nextValue: "Hello there" })).to.be.false
+	})
+	it("If the stream is invalid will return a string message", () => {
+		expect(checkStreamForErrors(false, { nextValue: "Hello there" })).to.be.a("string")
+		expect(checkStreamForErrors(false, { subject: "chat" })).to.be.a("string")
+	})
+})
+
+describe("createStateStream", () => {
+	it("will merge streams and emit the composed state stream", (done) => {
+		const { chat$ } = createNewSubject("chat", "You're my best friend")
+		const { user$ } = createNewSubject("user", {
+			id: 1,
+			userName: "captianUnderPants",
+		})
+
+		const newStore = createStateStream(chat$, user$)
+
+		const store$ = newStore.subscribe(x => {
+			expect(x).to.deep.equal({
+				chat: "You're my best friend",
+				user: {
+					id: 1,
+					userName: "captianUnderPants",
+				},
+			})
+			done()
+		})
+		store$.unsubscribe()
 	})
 })
