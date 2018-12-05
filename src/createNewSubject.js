@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs"
 export const genericSubjectUpdater = subject => x => ({
 	subject,
 	nextValue: x,
+	updatedAt: new Date().getTime(),
 })
 
 const isInvalidSubjectName = subjectName => !subjectName || typeof subjectName !== "string" || !/^[a-z_-]+$/gi.test(subjectName)

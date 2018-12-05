@@ -15,13 +15,6 @@ export default {
 	},
 	external: [ "rxjs", "rxjs/operators" ],
 	plugins: [
-		resolve({
-			browser: true,
-			only: [/ramda/]
-		}),
-		babel({
-			plugins: [ "ramda" ]
-		}),
 		commonjs({
 			include: /node_modules/,
 		}),

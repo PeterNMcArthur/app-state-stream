@@ -15,7 +15,6 @@
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
     "@babel/register": "^7.0.0",
-    "babel-plugin-ramda": "^1.6.3",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "parcel-bundler": "^1.10.3",
@@ -29,7 +28,6 @@
   },
   "dependencies": {
     "faker": "^4.1.0",
-    "ramda": "^0.26.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "rxjs": "^6.3.3"

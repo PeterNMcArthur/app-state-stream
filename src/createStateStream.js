@@ -5,6 +5,18 @@ import { compose } from "./helpers/compose"
 
 const isEmpty = x => x.length !== 0
 
+const head = array => array[0]
+const sort = sorter => array => array.sort(sorter)
+const prop = name => obj => obj && obj[name]
+
+const mostRecent = (a, b) => b.updatedAt - a.updatedAt
+
+const getMostRecentlyUpdated = compose(
+	sort(mostRecent),
+	head,
+	prop("subject"),
+)
+
 export const allStreamsAreValid = streams => streams.reduce((isValid, observable) => isValid && isObservable(observable), isEmpty(streams))
 
 const verifyStream = ({ subject, nextValue }) => {
@@ -23,9 +35,12 @@ export const updateApplicationStateStream = (acc, streams) => {
 	try {
 		const streamError = streams.reduce(checkStreamForErrors, false)
 		if (streamError) throw new Error(streamError)
-		return streams.reduce((nextStream, { subject, nextValue }) => ({ ...nextStream, [subject]: nextValue }), {})
+		
+		return {
+			...streams.reduce((nextStream, { subject, nextValue }) => ({ ...nextStream, [subject]: nextValue }), {}),
+			updated: getMostRecentlyUpdated(streams),
+		}
 	} catch(e) {
-		console.log(streams)
 		console.error("createStore error: ", JSON.stringify(e))
 		return acc
 	}
