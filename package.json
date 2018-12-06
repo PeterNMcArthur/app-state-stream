@@ -1,6 +1,6 @@
 {
   "name": "app-state-stream",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "application level state as a stream using rxjs",
   "homepage": "https://github.com/PeterNMcArthur/app-state-stream#readme",
   "main": "bundle.js",
