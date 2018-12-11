@@ -33,6 +33,7 @@ describe("updateApplicationStateStream", () => {
 			chat: {
 				message: "Good morning",
 			},
+			updated: "chat",
 		})
 		const updatedState = updateApplicationStateStream(newState, [
 			{
@@ -51,6 +52,7 @@ describe("updateApplicationStateStream", () => {
 				message: "Good morning",
 			},
 			image: "a-wholesome-picture-for-the-whole-family-to-enjoy.jpg",
+			updated: "chat",
 		})
 	})
 })
@@ -66,7 +68,7 @@ describe("checkStreamForErrors", () => {
 })
 
 describe("createStateStream", () => {
-	it("will merge streams and emit the composed state stream", (done) => {
+	it("will merge streams and emit the composed state stream", () => {
 		const { chat$ } = createNewSubject("chat", "You're my best friend")
 		const { user$ } = createNewSubject("user", {
 			id: 1,
@@ -83,7 +85,6 @@ describe("createStateStream", () => {
 					userName: "captianUnderPants",
 				},
 			})
-			done()
 		})
 		store$.unsubscribe()
 	})

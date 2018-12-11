@@ -1,6 +1,11 @@
 import { expect } from "chai"
-import { genericSubjectUpdater, createNewSubject } from "./createNewSubject"
+import { useFakeTimers } from "sinon"
 import { isObservable } from "rxjs"
+
+import { genericSubjectUpdater, createNewSubject } from "./createNewSubject"
+
+const now = new Date()
+const clock = useFakeTimers(now.getTime())
 
 describe("genericSubjectUpdater", () => {
 	it("Will compose functions together on a single value", () => {
@@ -10,6 +15,7 @@ describe("genericSubjectUpdater", () => {
 			nextValue: {
 				message: "Good morning sunshine",
 			},
+			updatedAt: now.getTime(),
 		})
 	})
 })

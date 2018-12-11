@@ -1,5 +1,5 @@
 import { merge, isObservable, combineLatest } from "rxjs"
-import { scan, shareReplay, startWith, skip } from "rxjs/operators"
+import { scan, shareReplay, skip } from "rxjs/operators"
 import { isNil } from "./helpers/isNil"
 import { compose } from "./helpers/compose"
 
@@ -52,7 +52,7 @@ export const createStateStream = (...streams) => {
 		return combineLatest(...streams)
 			.pipe(
 				scan(updateApplicationStateStream, {}),
-				shareReplay()
+				shareReplay(1)
 			)
 	} catch (e) {
 		console.error("createStore error: ", e)

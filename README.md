@@ -77,3 +77,30 @@ export class App extends Component {
 	}
 }
 ```
+
+## Recipes
+
+### Use store value in fetch stream
+
+```
+import { from } from "rxjs"
+import { flatMap, take, map, switchMap } from "rxjs/operators"
+import { createNewSubject } from "app-state-stream"
+import { store$ } from "./store"
+
+export const {
+	image$,
+	setImage
+} = createNewSubject("image", "https//www.fake-cat-api.com/image/random")
+
+const imgageStream$ = (catImageNo) => from(fetch(`https//www.fake-cat-api.com/image/${catImageNo}`))
+
+export const getCat = () => store$.pipe(
+	map(({ catImageNo }) => catImageNo),
+	take(1),
+	switchMap(catImageNo => imgageStream$(catImageNo)),
+	flatMap(x => x.json()),
+).subscribe(({ message }) => {
+		setImage(message)
+	})
+```
